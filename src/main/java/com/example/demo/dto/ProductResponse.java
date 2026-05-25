@@ -10,6 +10,9 @@ public class ProductResponse {
     private BigDecimal price;
     private Integer stock;
     private Boolean active;
+    
+    private Boolean inStock;
+    private Integer quantity;
 
     public Long getId() {
         return id;
@@ -58,5 +61,21 @@ public class ProductResponse {
     public void setActive(Boolean active) {
         this.active = active;
     }
+
+	public Boolean getInStock() {
+		return inStock;
+	}
+
+	public void setInStock(Boolean inStock) {
+		this.inStock = inStock;
+	}
+
+	public Integer getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(Integer quantity) {
+		this.quantity = quantity;
+	}
     
 }

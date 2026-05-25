@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.client.InventoryClient;
+import com.example.demo.client.dto.InventoryResponse;
 import com.example.demo.dto.ProductRequest;
 import com.example.demo.dto.ProductResponse;
 import com.example.demo.entity.Product;
@@ -22,10 +24,13 @@ public class ProductServiceImpl implements ProductService {
 
 	private final ProductRepository repository;
     private final ProductMapper mapper;
+    //Se inyecta Cliente 
+    private final InventoryClient inventoryClient;
 
-    public ProductServiceImpl(ProductRepository repository, ProductMapper mapper) {
+    public ProductServiceImpl(ProductRepository repository, ProductMapper mapper, InventoryClient inventoryClient) {
         this.repository = repository;
         this.mapper = mapper;
+        this.inventoryClient = inventoryClient;
     }
     
 	@Override
@@ -44,9 +49,15 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public ProductResponse findById(Long id) {
+		InventoryResponse inventory = inventoryClient.getInventory(id);
+		
 		Product product = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con id: " + id));
 
-        return mapper.toResponse(product);
+        ProductResponse response = mapper.toResponse(product);
+        response.setInStock(inventory.getInStock());
+        response.setQuantity(inventory.getQuantity());
+        
+        return response;
 	}
 
 	@Override
