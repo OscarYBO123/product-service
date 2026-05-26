@@ -16,6 +16,8 @@ import com.example.demo.mapper.ProductMapper;
 import com.example.demo.repository.ProductRepository;
 import com.example.demo.service.ProductService;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+
 /**
  * Implmenetacion de Servicio para productos
  */
@@ -48,6 +50,9 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
+	@CircuitBreaker(
+			name = "inventoryService",
+			fallbackMethod = "inventoryFallback")
 	public ProductResponse findById(Long id) {
 		InventoryResponse inventory = inventoryClient.getInventory(id);
 		
@@ -58,6 +63,18 @@ public class ProductServiceImpl implements ProductService {
         response.setQuantity(inventory.getQuantity());
         
         return response;
+	}
+	
+	public ProductResponse inventoryFallback(Long id, Exception ex) {
+
+	    Product product = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
+
+	    ProductResponse response = mapper.toResponse(product);
+
+	    response.setQuantity(0);
+	    response.setInStock(false);
+
+	    return response;
 	}
 
 	@Override
