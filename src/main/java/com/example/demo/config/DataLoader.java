@@ -20,16 +20,18 @@ public class DataLoader implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		
-		Product product = new Product();
+		if (repository.findById(1L).isEmpty()) {
+			Product product = new Product();
 
-        product.setName("Laptop Gamer");
-        product.setDescription("RTX 4060");
-        product.setPrice(new BigDecimal("25000"));
-        product.setStock(10);
+	        product.setName("Laptop Gamer");
+	        product.setDescription("RTX 4060");
+	        product.setPrice(new BigDecimal("25000"));
+	        product.setStock(10);
 
-        repository.save(product);
+	        //repository.save(product);
 
-        System.out.println("PRODUCTO INSERTADO");
+	        System.out.println("PRODUCTO INSERTADO");
+		}
 		
 	}
 
