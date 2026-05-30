@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -43,7 +44,10 @@ public class ProductController {
             @ApiResponse(responseCode = "201", description = "Producto creado correctamente"),
             @ApiResponse(responseCode = "400", description = "Datos inválidos")
     })
-    public ProductResponse create(@Valid @RequestBody ProductRequest request) {
+    public ProductResponse create(@Valid @RequestBody ProductRequest request, @RequestHeader("X-Role") String role) {
+        if (!role.equals("ADMIN")) {
+            throw new RuntimeException("Acceso denegado");
+        }
         return service.create(request);
     }
 
@@ -64,7 +68,10 @@ public class ProductController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
+    public void delete(@PathVariable Long id, @RequestHeader("X-Role") String role) {
+    	if (!role.equals("ADMIN")) {
+            throw new RuntimeException("Acceso denegado");
+        }
         service.delete(id);
     }
     
